@@ -8,19 +8,20 @@ import android.util.Log;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.net.URLConnection;
 
 public class HandlerRunnable implements Runnable {
 
-    private CinemaAdapter adapter;
+    private WeakReference<CinemaAdapter> adapter;
     private Film f;
-    private Activity a;
+    private  WeakReference<Activity> a;
 
     public HandlerRunnable(CinemaAdapter adapter, Film f, Activity a) {
-        this.adapter = adapter;
+        this.adapter = new WeakReference<CinemaAdapter>(adapter);
         this.f = f;
-        this.a = a;
+        this.a = new WeakReference<Activity>(a);
     }
 
     @Override
@@ -42,12 +43,20 @@ public class HandlerRunnable implements Runnable {
         }
 
         f.setImage(bm);
-        a.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
+
+        Activity activity = a.get();
+        final CinemaAdapter adap = adapter.get();
+
+        if(activity!=null && adapter!=null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adap.notifyDataSetChanged();
+                }
+            });
+        }
+
+
 
     }
 }

@@ -1,14 +1,18 @@
 package com.example.piotn.pmob_td;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,12 +36,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static android.content.ContentValues.TAG;
+
 public class MainActivity extends Activity {
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
+    private boolean GPS_PERMISSION = false;
+
+    Button b;
+    Button b2;
+    Button b3;
+    Button save;
+    Button load;
 
     private static final BlockingQueue<Runnable> sPoolWorkQueue =
             new LinkedBlockingQueue<Runnable>(128);
@@ -46,6 +59,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final String[] permissions = new String[2];
+        permissions[0] = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        permissions[1] = Manifest.permission.ACCESS_COARSE_LOCATION;
 
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -57,9 +74,11 @@ public class MainActivity extends Activity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recycler.setLayoutManager(manager);
 
-        Button b = (Button) findViewById(R.id.button);
-        Button b2 = (Button) findViewById(R.id.button2);
-        Button b3 = (Button) findViewById(R.id.button3);
+        b = (Button) findViewById(R.id.button);
+        b2 = (Button) findViewById(R.id.button2);
+        b3 = (Button) findViewById(R.id.button3);
+        save = (Button) findViewById(R.id.button_save);
+        load = (Button) findViewById(R.id.button_load);
 
         final Activity activity = this;
 
@@ -93,8 +112,10 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                for (final Film f : films) {
-                    pool.execute(new HandlerRunnable(adapter, f, activity));
+                if(askPermission(permissions)) {
+                    for (final Film f : films) {
+                        pool.execute(new HandlerRunnable(adapter, f, activity));
+                    }
                 }
 
             }
@@ -113,9 +134,10 @@ public class MainActivity extends Activity {
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                for (final Film f : films) {
-                    handler.post(new HandlerRunnable(adapter, f, activity));
+                if(askPermission(permissions)) {
+                    for (final Film f : films) {
+                        handler.post(new HandlerRunnable(adapter, f, activity));
+                    }
                 }
 
             }
@@ -126,9 +148,12 @@ public class MainActivity extends Activity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (Film f : films) {
-                    new DownloadImagesTask(f, adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR/*ou l'autre méthode*/, "http://lorempixel.com/100/100");
-                    //new DownloadImagesTask(f, adapter).execute("http://lorempixel.com/100/100");
+
+                if(askPermission(permissions)) {
+                    for (Film f : films) {
+                        new DownloadImagesTask(f, adapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR/*ou l'autre méthode*/, "http://lorempixel.com/100/100");
+                        //new DownloadImagesTask(f, adapter).execute("http://lorempixel.com/100/100");
+                    }
                 }
             }
         });
@@ -137,5 +162,47 @@ public class MainActivity extends Activity {
 
 
 
+    }
+
+
+    private boolean askPermission(String[] permissions) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_DENIED) || (checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_DENIED)) {
+                MainActivity.this.requestPermissions(permissions, 1);
+                return GPS_PERMISSION;
+
+            }
+            else
+                return true;
+
+        }
+
+return false;
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_DENIED){
+            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            finish();
+        }
+
+        if(grantResults[1]== PackageManager.PERMISSION_DENIED){
+            Log.v(TAG,"Permission: "+permissions[1]+ "was "+grantResults[1]);
+            GPS_PERMISSION = false;
+            /*b.setClickable(false);
+            b2.setClickable(false);
+            b3.setClickable(false);
+            save.setClickable(false);
+            load.setClickable(false);*/
+        }else {
+            Log.v(TAG,"Permission: "+permissions[1]+ "was "+grantResults[1]);
+            GPS_PERMISSION = true;
+        }
     }
 }

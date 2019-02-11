@@ -42,7 +42,7 @@ public class HandlerRunnable implements Runnable {
             Log.e("Hub","Error getting the image from server : " + e.getMessage().toString());
         }
 
-        f.setImage(bm);
+        f.setImage(new SerialBitmap(bm));
 
         Activity activity = a.get();
         final CinemaAdapter adap = adapter.get();

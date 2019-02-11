@@ -10,9 +10,9 @@ public class Film implements Serializable {
     private String nom;
     private String date;
     private String real;
-    private Bitmap image = null;
+    private SerialBitmap image = null;
 
-    public Film(String nom, String date, String real, Bitmap image) {
+    public Film(String nom, String date, String real, SerialBitmap image) {
         this.nom = nom;
         this.date = date;
         this.real = real;
@@ -50,11 +50,11 @@ public class Film implements Serializable {
         this.real = real;
     }
 
-    public Bitmap getImage() {
+    public SerialBitmap getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(SerialBitmap image) {
         this.image = image;
     }
 }

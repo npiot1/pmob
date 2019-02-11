@@ -47,7 +47,7 @@ public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
-        f.setImage(result);
+        f.setImage(new SerialBitmap(result));
         adapter.notifyDataSetChanged();
     }
 

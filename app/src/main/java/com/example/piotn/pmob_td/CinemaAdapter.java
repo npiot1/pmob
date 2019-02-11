@@ -76,8 +76,8 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.FilmHolder
         holder.nom.setText(items.get(position).getNom());
 
 
-        if(!(items.get(position).getImage()==null)) {
-            holder.image.setImageBitmap(items.get(position).getImage());
+        if(!(items.get(position).getImage().bitmap==null)) {
+            holder.image.setImageBitmap(items.get(position).getImage().bitmap);
         }
         else{
             holder.image.setImageResource(R.drawable.ic_launcher_background);

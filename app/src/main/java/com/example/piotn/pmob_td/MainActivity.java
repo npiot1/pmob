@@ -102,13 +102,14 @@ public class MainActivity extends Activity {
 
         Bitmap icon = BitmapFactory.decodeResource(getBaseContext().getResources(),
                 R.drawable.ic_launcher_background);
+        SerialBitmap serialIcon = new SerialBitmap(icon);
 
         final List<Film> films = new ArrayList<Film>();
         //films.add(new Film("Shutter Island", "20/09/2010", "Jean"));
         //films.add(new Film("Avatar", "20/09/2009", "Cameron"));
         //films.add(new Film("La cité de la peur", "20/09/1994", "Marc"));
         for (int i = 0; i<50; i++) {
-            Film f = new Film("La cité de la peur", "20/09/1994", "Marc", icon);
+            Film f = new Film("La cité de la peur", "20/09/1994", "Marc", serialIcon);
             films.add(f);
         }
 

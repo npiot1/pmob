@@ -3,7 +3,9 @@ package com.example.piotn.pmob_td;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-public class Film {
+import java.io.Serializable;
+
+public class Film implements Serializable {
 
     private String nom;
     private String date;

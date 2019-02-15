@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -93,9 +94,18 @@ public class MainActivity extends Activity {
         b = (Button) findViewById(R.id.button);
         b2 = (Button) findViewById(R.id.button2);
         b3 = (Button) findViewById(R.id.button3);
+        Button b4 = (Button) findViewById(R.id.button4);
         save = (Button) findViewById(R.id.button_save);
         load = (Button) findViewById(R.id.button_load);
 
+
+        b4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getApplication(), KeyStoreActivity.class);
+                startActivity(myIntent);
+            }
+        });
 
 
         final Activity activity = this;

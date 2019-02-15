@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.BadPaddingException;
@@ -20,12 +21,16 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class SaveFilms {
 
-    private static final byte[] key = "MyDifficultPassw".getBytes();
-    private static final String transformation = "AES/ECB/PKCS5Padding";
+    //public static final byte[] key = "123".getBytes();
+    private static final String transformation = "AES";
+    private static final String algorithme = "SHA-256";
 
-    public static void encrypt(Serializable object, OutputStream ostream) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+
+
+    public static void encrypt(Serializable object, OutputStream ostream, String mdp) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         try {
-            // Length is 16 byte
+            byte[] key = calculerHash(algorithme, mdp);
+
             SecretKeySpec sks = new SecretKeySpec(key, transformation);
 
             // Create cipher
@@ -36,28 +41,51 @@ public class SaveFilms {
             // Wrap the output stream
             CipherOutputStream cos = new CipherOutputStream(ostream, cipher);
             ObjectOutputStream outputStream = new ObjectOutputStream(cos);
-            outputStream.writeObject(sealedObject);
+            outputStream.writeObject(object);
             outputStream.close();
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         }
     }
 
-    public static Object decrypt(InputStream istream) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+    public static Object decrypt(InputStream istream, String mdp) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+
+        byte[] key = calculerHash(algorithme, mdp);
+
         SecretKeySpec sks = new SecretKeySpec(key, transformation);
         Cipher cipher = Cipher.getInstance(transformation);
         cipher.init(Cipher.DECRYPT_MODE, sks);
 
         CipherInputStream cipherInputStream = new CipherInputStream(istream, cipher);
         ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
-        SealedObject sealedObject;
+
+        try {
+            Object o = (Object) inputStream.readObject();
+            return o;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+        /*SealedObject sealedObject;
         try {
             sealedObject = (SealedObject) inputStream.readObject();
             return sealedObject.getObject(cipher);
         } catch (ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
             return null;
+        }*/
+    }
+
+    public static byte[] calculerHash(String algorithme, String mdp) {
+        byte[] digest = null;
+        try {
+            MessageDigest mDig = MessageDigest.getInstance(algorithme);
+            mDig.update(mdp.getBytes());
+            digest = mDig.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
+        return digest;
     }
 
 }

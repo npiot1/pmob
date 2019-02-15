@@ -23,6 +23,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
@@ -59,6 +60,7 @@ public class MainActivity extends Activity {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
     private boolean GPS_PERMISSION = false;
+    private static String mdp = "";
 
     Button b;
     Button b2;
@@ -158,12 +160,14 @@ public class MainActivity extends Activity {
                 // which view you pass in doesn't matter, it is only used for the window tolken
                 popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
                 Button close = (Button) popupView.findViewById(R.id.button_ok);
+                final EditText et = (EditText) popupView.findViewById(R.id.editText_pass);
 
                 close.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         popupWindow.dismiss();
+                        mdp = et.getText().toString();
 
                         OutputStream os = null;
                         File path = getBaseContext().getFilesDir();
@@ -176,7 +180,7 @@ public class MainActivity extends Activity {
                         }
 
                         try {
-                            SaveFilms.encrypt((Serializable) films, os);
+                            SaveFilms.encrypt((Serializable) films, os, mdp);
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (NoSuchAlgorithmException e) {
@@ -213,39 +217,45 @@ public class MainActivity extends Activity {
                 // which view you pass in doesn't matter, it is only used for the window tolken
                 popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
                 Button close = (Button) popupView.findViewById(R.id.button_ok);
+                final EditText et = (EditText) popupView.findViewById(R.id.editText_pass);
 
                 close.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         popupWindow.dismiss();
+                        /*if(SaveFilms.key==mdp.getBytes()){
 
-                        InputStream is = null;
-                        File path = getBaseContext().getFilesDir();
-                        File file = new File(path, "sample.txt");
+                        }*/
 
-                        try {
-                            is = new FileInputStream(file);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            InputStream is = null;
+                            File path = getBaseContext().getFilesDir();
+                            File file = new File(path, "sample.txt");
+
+                            try {
+                                is = new FileInputStream(file);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                List<Film> filmsSerial = (List<Film>) SaveFilms.decrypt(is, et.getText().toString());
+                                films.clear();
+                                films.addAll(filmsSerial);
+                                adapter.notifyDataSetChanged();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (NoSuchAlgorithmException e) {
+                                e.printStackTrace();
+                            } catch (NoSuchPaddingException e) {
+                                e.printStackTrace();
+                            } catch (InvalidKeyException e) {
+                                e.printStackTrace();
+                            }
                         }
 
-                        try {
-                            List<Film> filmsSerial = (List<Film>) SaveFilms.decrypt(is);
-                            adapter.setItems(filmsSerial);
-                            adapter.notifyDataSetChanged();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
-                        } catch (InvalidKeyException e) {
-                            e.printStackTrace();
-                        }
 
 
-                    }
                 });
             }
         });

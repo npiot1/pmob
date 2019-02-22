@@ -97,6 +97,7 @@ public class MainActivity extends Activity {
         Button b4 = (Button) findViewById(R.id.button4);
         save = (Button) findViewById(R.id.button_save);
         load = (Button) findViewById(R.id.button_load);
+        Button b5 = (Button) findViewById(R.id.button5);
 
 
         b4.setOnClickListener(new View.OnClickListener() {
@@ -108,11 +109,12 @@ public class MainActivity extends Activity {
         });
 
 
+
         final Activity activity = this;
 
         //WeakReference<View> wrw = new WeakReference(myView);
 
-        Bitmap icon = BitmapFactory.decodeResource(getBaseContext().getResources(),
+        final Bitmap icon = BitmapFactory.decodeResource(getBaseContext().getResources(),
                 R.drawable.ic_launcher_background);
         SerialBitmap serialIcon = new SerialBitmap(icon);
 
@@ -292,6 +294,14 @@ public class MainActivity extends Activity {
             }
         });
 
+
+
+        b5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new JsonTask(adapter, films, icon).execute();
+            }
+        });
 
         //async
         b.setOnClickListener(new View.OnClickListener() {

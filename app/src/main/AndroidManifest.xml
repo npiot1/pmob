@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".KeyStoreActivity"></activity>
+        <activity android:name=".KeyStoreActivity" />
+        <activity android:name=".JsonActivity"></activity>
     </application>
 
 </manifest>

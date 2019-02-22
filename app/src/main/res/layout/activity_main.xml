@@ -89,6 +89,14 @@
             android:text="key store"
             android:layout_weight="1"/>
 
+        <Button
+            android:id="@+id/button5"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="JSON"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

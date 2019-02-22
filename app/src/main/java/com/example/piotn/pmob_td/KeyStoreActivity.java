@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.heroku.sdk.EnvKeyStore;
 
@@ -44,7 +45,8 @@ public class KeyStoreActivity extends AppCompatActivity {
         setContentView(R.layout.activity_key_store);
 
         final EditText url = (EditText) findViewById(R.id.editText);
-        final EditText certsLabel = (EditText) findViewById(R.id.editText2);
+        //final EditText certsLabel = (EditText) findViewById(R.id.editText2);
+        final TextView certsLabel = (TextView) findViewById(R.id.textView2);
         Button b = (Button) findViewById(R.id.button5);
 
         b.setOnClickListener(new View.OnClickListener() {
